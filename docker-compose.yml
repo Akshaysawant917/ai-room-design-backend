@@ -1,0 +1,12 @@
+services:
+  backend:
+    build: .
+    container_name: ai-home-backend
+
+    env_file:
+      - .env
+
+    ports:
+      - "4001:4000"
+
+    restart: unless-stopped

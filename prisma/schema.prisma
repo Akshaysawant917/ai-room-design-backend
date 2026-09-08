@@ -1,0 +1,96 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum ImageType {
+  ORIGINAL
+  GENERATED
+}
+
+enum TransformationStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+}
+
+enum PaymentStatus {
+  CREATED
+  CAPTURED
+  FAILED
+  REFUNDED
+}
+
+model User {
+  id                   String           @id @default(uuid())
+  googleId             String           @unique
+  name                 String
+  email                String           @unique
+  avatarUrl            String?
+  freeTransformationUsed Boolean        @default(false)
+  images               Image[]
+  transformations      Transformation[]
+  payments             Payment[]
+  createdAt            DateTime         @default(now())
+  updatedAt            DateTime         @updatedAt
+}
+
+model Image {
+  id                 String          @id @default(uuid())
+  userId             String
+  type               ImageType
+  url                String
+  publicId           String
+  user               User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  originalFor        Transformation[] @relation("OriginalImage")
+  generatedFor       Transformation[] @relation("GeneratedImage")
+  createdAt          DateTime        @default(now())
+
+  @@index([userId])
+}
+
+model Transformation {
+  id                String               @id @default(uuid())
+  userId            String
+  originalImageId   String
+  generatedImageId  String?
+  roomType          String
+  budget            String
+  styles            String[]
+  colorPreference   String
+  status            TransformationStatus @default(PENDING)
+  estimatedCost     Int?
+  summary           String?
+  user              User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  originalImage     Image                @relation("OriginalImage", fields: [originalImageId], references: [id])
+  generatedImage   Image?                @relation("GeneratedImage", fields: [generatedImageId], references: [id])
+  payments          Payment[]
+  createdAt         DateTime             @default(now())
+  updatedAt         DateTime             @updatedAt
+  completedAt       DateTime?
+
+  @@index([userId])
+}
+
+model Payment {
+  id                String         @id @default(uuid())
+  userId            String
+  transformationId  String
+  razorpayOrderId   String         @unique
+  razorpayPaymentId String?        @unique
+  razorpaySignature String?
+  amount            Int
+  currency          String         @default("INR")
+  status            PaymentStatus  @default(CREATED)
+  user              User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  transformation    Transformation @relation(fields: [transformationId], references: [id], onDelete: Cascade)
+  createdAt         DateTime       @default(now())
+  paidAt            DateTime?
+
+  @@index([userId])
+}
