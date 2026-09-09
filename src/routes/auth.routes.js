@@ -14,7 +14,7 @@ router.get('/google/callback', (req, res, next) => {
   passport.authenticate('google', { session: false }, (error, result) => {
     if (error) return next(error);
     if (!result?.token) return next(new Error('Google authentication did not return a token.'));
-    const frontendUrl = process.env.FRONTEND_URL || 'https://design.getminidesk.com/';
+    const frontendUrl = process.env.FRONTEND_URL || 'https://design.getminidesk.com';
     return res.redirect(`${frontendUrl}/auth/callback?token=${encodeURIComponent(result.token)}`);
   })(req, res, next);
 });
