@@ -12,7 +12,7 @@ import { errorMiddleware } from './middleware/error.middleware.js';
 const app = express();
 configureGoogle();
 
-app.use(cors({ origin: process.env.FRONTEND_URL || 'https://design.getminidesk.com' }));
+app.use(cors({ origin: process.env.FRONTEND_URL }));
 app.use(express.json());
 app.use(passport.initialize());
 
