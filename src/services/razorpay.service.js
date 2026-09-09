@@ -2,8 +2,8 @@ import Razorpay from 'razorpay';
 import crypto from 'node:crypto';
 import { createError } from '../utils/errors.js';
 
-export const FIRST_TRANSFORMATION_AMOUNT = 2900;
-export const REPEAT_TRANSFORMATION_AMOUNT = 7900;
+export const FIRST_TRANSFORMATION_AMOUNT = 4900;
+export const REPEAT_TRANSFORMATION_AMOUNT = 9900;
 
 function getClient() {
   if (!process.env.RAZORPAY_KEY_ID || !process.env.RAZORPAY_KEY_SECRET) {
